@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Onboarding Playbook Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'DM Sans', sans-serif; background: #fff; color: #1a1a1a; min-height: 100vh; }
+
+.header { border-bottom: 1px solid #e8e8e8; padding: 0.85rem 1.5rem; display: flex; align-items: center; gap: 12px; }
+.logo-badge { width: 28px; height: 28px; background: #1D9E75; border-radius: 7px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.header-title { font-family: 'Syne', sans-serif; font-size: 15px; font-weight: 600; color: #1a1a1a; }
+.header-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.header-sub { font-size: 11px; color: #888; }
+
+.api-bar { padding: 8px 1.5rem; background: #f7f7f5; border-bottom: 1px solid #e8e8e8; display: flex; align-items: center; gap: 10px; }
+.api-label { font-size: 12px; font-weight: 500; color: #666; white-space: nowrap; }
+.api-input { flex: 1; font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 5px 10px; border: 1px solid #ddd; border-radius: 7px; background: #fff; color: #1a1a1a; outline: none; }
+.api-input:focus { border-color: #1D9E75; box-shadow: 0 0 0 2px rgba(29,158,117,0.12); }
+.api-link { font-size: 12px; color: #185FA5; text-decoration: none; white-space: nowrap; }
+.api-note { font-size: 11px; color: #aaa; white-space: nowrap; }
+
+.main-tabs { display: flex; border-bottom: 1px solid #e8e8e8; background: #fff; }
+.main-tab { font-size: 13px; font-weight: 500; padding: 10px 20px; cursor: pointer; color: #888; border: none; border-bottom: 2px solid transparent; margin-bottom: -1px; font-family: 'DM Sans', sans-serif; background: none; transition: color 0.15s; display: flex; align-items: center; gap: 6px; }
+.main-tab.active { color: #1D9E75; border-bottom-color: #1D9E75; }
+.main-tab:hover:not(.active) { color: #444; }
+.main-tab-dot { width: 6px; height: 6px; border-radius: 50%; background: #E24B4A; display: none; }
+.main-tab-dot.visible { display: block; }
+
+.page { display: none; }
+.page.active { display: block; }
+
+.two-col { display: grid; grid-template-columns: 310px 1fr; min-height: calc(100vh - 110px); }
+.form-panel { border-right: 1px solid #e8e8e8; padding: 1.25rem; overflow-y: auto; }
+.output-panel { padding: 1.25rem; overflow-y: auto; }
+
+.section-label { font-size: 11px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: #888; margin-bottom: 10px; }
+.field-group { margin-bottom: 1rem; }
+.field-label { font-size: 13px; font-weight: 500; color: #1a1a1a; margin-bottom: 5px; display: block; }
+.field-sub { font-size: 11px; color: #888; margin-bottom: 5px; display: block; }
+
+select, textarea { width: 100%; font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 7px 10px; border: 1px solid #ddd; border-radius: 8px; background: #fff; color: #1a1a1a; outline: none; transition: border-color 0.15s; }
+select:focus, textarea:focus { border-color: #1D9E75; box-shadow: 0 0 0 2px rgba(29,158,117,0.12); }
+textarea { resize: vertical; min-height: 60px; line-height: 1.5; }
+
+.chips-row { display: flex; flex-wrap: wrap; gap: 5px; }
+.chip { font-size: 12px; padding: 4px 10px; border-radius: 20px; border: 1px solid #ddd; cursor: pointer; color: #666; background: #fff; transition: all 0.15s; font-family: 'DM Sans', sans-serif; user-select: none; }
+.chip.active { background: #E1F5EE; border-color: #5DCAA5; color: #0F6E56; font-weight: 500; }
+.chip:hover:not(.active) { background: #f7f7f5; }
+
+.divider { border: none; border-top: 1px solid #e8e8e8; margin: 1rem 0; }
+
+.btn-primary { width: 100%; padding: 10px; background: #1D9E75; color: white; border: none; border-radius: 8px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.15s, transform 0.1s; }
+.btn-primary:hover { background: #0F6E56; }
+.btn-primary:active { transform: scale(0.98); }
+.btn-primary:disabled { background: #e8e8e8; color: #aaa; cursor: not-allowed; }
+
+.empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; color: #888; gap: 10px; padding: 4rem 2rem; }
+.empty-icon { width: 40px; height: 40px; border-radius: 10px; background: #f7f7f5; display: flex; align-items: center; justify-content: center; }
+
+.playbook-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid #e8e8e8; }
+.playbook-title { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 600; color: #1a1a1a; margin-bottom: 3px; }
+.playbook-meta { font-size: 12px; color: #888; }
+
+.badge { font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 20px; }
+.badge-teal { background: #E1F5EE; color: #0F6E56; }
+.badge-blue { background: #E6F1FB; color: #185FA5; }
+.badge-amber { background: #FAEEDA; color: #854F0B; }
+.badge-red { background: #FCEBEB; color: #A32D2D; }
+
+.inner-tabs { display: flex; margin-bottom: 1.25rem; border-bottom: 1px solid #e8e8e8; }
+.inner-tab { font-size: 13px; font-weight: 500; padding: 7px 14px; cursor: pointer; color: #888; border: none; border-bottom: 2px solid transparent; margin-bottom: -1px; font-family: 'DM Sans', sans-serif; background: none; transition: color 0.15s; }
+.inner-tab.active { color: #1D9E75; border-bottom-color: #1D9E75; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.phase-card { border: 1px solid #e8e8e8; border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
+.phase-header { display: flex; align-items: center; gap: 10px; padding: 10px 14px; background: #f7f7f5; border-bottom: 1px solid #e8e8e8; }
+.phase-num { width: 22px; height: 22px; border-radius: 50%; background: #1D9E75; color: white; font-size: 11px; font-weight: 600; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-family: 'Syne', sans-serif; }
+.phase-name { font-size: 13px; font-weight: 500; color: #1a1a1a; font-family: 'Syne', sans-serif; }
+.phase-days { margin-left: auto; font-size: 11px; color: #888; }
+.phase-body { padding: 10px 14px; }
+.milestone-row { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f0f0f0; }
+.milestone-row:last-child { border-bottom: none; }
+.check-box { width: 15px; height: 15px; border: 1.5px solid #5DCAA5; border-radius: 4px; flex-shrink: 0; margin-top: 2px; }
+.milestone-text { font-size: 13px; color: #1a1a1a; line-height: 1.5; flex: 1; }
+.owner-pill { font-size: 11px; color: #888; background: #f7f7f5; border-radius: 4px; padding: 2px 6px; white-space: nowrap; }
+
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+.kpi-card { background: #f7f7f5; border-radius: 10px; padding: 12px; }
+.kpi-label { font-size: 11px; color: #888; margin-bottom: 4px; }
+.kpi-value { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 600; color: #1a1a1a; }
+.kpi-target { font-size: 11px; color: #1D9E75; margin-top: 2px; }
+
+.email-card { border: 1px solid #e8e8e8; border-radius: 12px; margin-bottom: 10px; overflow: hidden; }
+.email-header { padding: 9px 14px; background: #f7f7f5; border-bottom: 1px solid #e8e8e8; }
+.email-day { font-size: 11px; font-weight: 500; color: #0F6E56; margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.06em; }
+.email-subject { font-size: 13px; font-weight: 500; color: #1a1a1a; }
+.email-body { padding: 10px 14px; font-size: 13px; color: #1a1a1a; line-height: 1.6; white-space: pre-wrap; }
+
+.sql-block { background: #f7f7f5; border: 1px solid #e8e8e8; border-radius: 10px; padding: 14px; font-family: 'Courier New', monospace; font-size: 12px; color: #1a1a1a; white-space: pre; overflow-x: auto; line-height: 1.6; }
+.sql-comment { color: #aaa; }
+.sql-keyword { color: #185FA5; font-weight: 600; }
+.sql-type { color: #854F0B; }
+.sql-string { color: #0F6E56; }
+
+.summary-box { font-size: 13px; color: #1a1a1a; line-height: 1.6; margin-bottom: 1.25rem; padding: 12px 14px; background: #f7f7f5; border-radius: 10px; border-left: 3px solid #1D9E75; }
+.copy-btn { font-size: 12px; padding: 4px 10px; border: 1px solid #ddd; border-radius: 6px; cursor: pointer; color: #666; background: #fff; font-family: 'DM Sans', sans-serif; }
+.copy-btn:hover { background: #f7f7f5; }
+
+.spinner { width: 15px; height: 15px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.error-box { background: #fff5f5; border: 1px solid #fca5a5; border-radius: 8px; padding: 14px; font-size: 13px; color: #b91c1c; line-height: 1.6; }
+.error-box a { color: #b91c1c; }
+
+.hc-client-bar { background: #f7f7f5; border: 1px solid #e8e8e8; border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 1.25rem; display: flex; align-items: center; gap: 16px; }
+.hc-client-name { font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 600; color: #1a1a1a; }
+.hc-client-meta { font-size: 12px; color: #888; margin-top: 2px; }
+.hc-day-badge { margin-left: auto; text-align: right; }
+.hc-day-num { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 600; color: #1a1a1a; line-height: 1; }
+.hc-day-label { font-size: 11px; color: #888; }
+
+.hc-phase-section { margin-bottom: 1.25rem; }
+.hc-phase-title { font-size: 12px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.hc-phase-sep { flex: 1; height: 1px; background: #e8e8e8; }
+
+.hc-item { border: 1px solid #e8e8e8; border-radius: 10px; padding: 12px 14px; margin-bottom: 8px; }
+.hc-item-top { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
+.hc-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+.hc-dot-ok { background: #639922; }
+.hc-dot-risk { background: #EF9F27; }
+.hc-dot-fail { background: #E24B4A; }
+.hc-dot-pending { background: #ddd; }
+.hc-item-text { font-size: 13px; color: #1a1a1a; line-height: 1.4; flex: 1; }
+.hc-item-sub { font-size: 11px; color: #888; margin-top: 2px; }
+.hc-status-row { display: flex; gap: 6px; flex-wrap: wrap; }
+.hc-pill { font-size: 12px; padding: 4px 12px; border-radius: 20px; cursor: pointer; border: 1px solid transparent; font-family: 'DM Sans', sans-serif; transition: all 0.12s; }
+.hc-pill-ok { background: #EAF3DE; color: #3B6D11; border-color: #C0DD97; }
+.hc-pill-risk { background: #FAEEDA; color: #854F0B; border-color: #FAC775; }
+.hc-pill-fail { background: #FCEBEB; color: #A32D2D; border-color: #F09595; }
+.hc-pill-pending { background: #f7f7f5; color: #888; border-color: #e8e8e8; }
+.hc-pill.sel { font-weight: 600; transform: scale(1.03); }
+.hc-note { width: 100%; font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 6px 10px; border: 1px solid #e8e8e8; border-radius: 7px; background: #fff; color: #1a1a1a; outline: none; resize: none; min-height: 44px; line-height: 1.5; margin-top: 8px; }
+.hc-note:focus { border-color: #1D9E75; }
+
+.score-section { margin-bottom: 1.5rem; }
+.score-top { display: flex; align-items: center; gap: 16px; margin-bottom: 10px; }
+.score-num { font-family: 'Syne', sans-serif; font-size: 42px; font-weight: 600; line-height: 1; }
+.score-green { color: #3B6D11; }
+.score-amber { color: #854F0B; }
+.score-red { color: #A32D2D; }
+.score-info { flex: 1; }
+.score-label { font-size: 13px; color: #888; }
+.score-status { font-size: 14px; font-weight: 500; margin-top: 2px; }
+.score-bar { height: 8px; background: #e8e8e8; border-radius: 4px; overflow: hidden; margin-bottom: 1.25rem; }
+.score-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+.score-fill-green { background: #639922; }
+.score-fill-amber { background: #EF9F27; }
+.score-fill-red { background: #E24B4A; }
+
+.flag-card { border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 10px; }
+.flag-red { background: #FCEBEB; border: 1px solid #F09595; }
+.flag-amber { background: #FAEEDA; border: 1px solid #FAC775; }
+.flag-green { background: #EAF3DE; border: 1px solid #C0DD97; }
+.flag-title { font-size: 13px; font-weight: 500; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+.flag-red .flag-title { color: #A32D2D; }
+.flag-amber .flag-title { color: #854F0B; }
+.flag-green .flag-title { color: #3B6D11; }
+.flag-body { font-size: 12px; line-height: 1.6; }
+.flag-red .flag-body { color: #791F1F; }
+.flag-amber .flag-body { color: #633806; }
+.flag-green .flag-body { color: #27500A; }
+.flag-action { font-size: 12px; font-weight: 500; margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(0,0,0,0.08); }
+.flag-red .flag-action { color: #A32D2D; }
+.flag-amber .flag-action { color: #854F0B; }
+
+.flag-icon { width: 16px; height: 16px; flex-shrink: 0; }
+.diag-loading { font-size: 13px; color: #888; padding: 1rem 0; text-align: center; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.spinner-dark { width: 14px; height: 14px; border: 2px solid #ddd; border-top-color: #1D9E75; border-radius: 50%; animation: spin 0.7s linear infinite; }
+
+.hc-actions { display: flex; gap: 8px; margin-top: 1rem; }
+.btn-diag { flex: 1; padding: 9px; background: #1D9E75; color: white; border: none; border-radius: 8px; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
+.btn-diag:hover { background: #0F6E56; }
+.btn-diag:disabled { background: #e8e8e8; color: #aaa; cursor: not-allowed; }
+
+.no-playbook-hc { text-align: center; padding: 3rem; color: #888; font-size: 13px; }
+
+@media (max-width: 700px) {
+  .two-col { grid-template-columns: 1fr; }
+  .form-panel { border-right: none; border-bottom: 1px solid #e8e8e8; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo-badge">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linejoin="round">
+      <path d="M12 2L3 7v10l9 5 9-5V7L12 2z"/>
+      <path d="M12 22V12M3 7l9 5 9-5"/>
+    </svg>
+  </div>
+  <span class="header-title">Onboarding Playbook Generator</span>
+  <div class="header-right">
+    <span class="header-sub">Gemini API · free tier</span>
+  </div>
+</div>
+
+<div class="api-bar">
+  <span class="api-label">Gemini API Key</span>
+  <input class="api-input" type="password" id="api-key" placeholder="Paste your key — AIza..." />
+  <span class="api-note">gemini-2.5-flash</span>
+  <a class="api-link" href="https://aistudio.google.com/app/apikey" target="_blank">Get free key ↗</a>
+</div>
+
+<div class="main-tabs">
+  <button class="main-tab active" onclick="switchMainTab(this,'page-playbook')">
+    <svg class="flag-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 12h8M8 8h8M8 16h5"/></svg>
+    Playbook generator
+  </button>
+  <button class="main-tab" onclick="switchMainTab(this,'page-health')" id="tab-health">
+    <svg class="flag-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+    Health check
+    <div class="main-tab-dot" id="hc-dot"></div>
+  </button>
+</div>
+
+<div id="page-playbook" class="page active">
+  <div class="two-col">
+    <div class="form-panel">
+      <div class="section-label">Client profile</div>
+
+      <div class="field-group">
+        <label class="field-label">Installation type</label>
+        <div class="chips-row" id="chips-install">
+          <span class="chip active" data-val="Residential solar (rooftop)">Residential solar</span>
+          <span class="chip" data-val="Commercial solar (SME)">Commercial SME</span>
+          <span class="chip" data-val="Commercial solar (enterprise)">Enterprise</span>
+          <span class="chip" data-val="Solar + battery storage">+ Battery</span>
+          <span class="chip" data-val="Solar + EV wallbox">+ Wallbox</span>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Country / market</label>
+        <select id="sel-country">
+          <option value="Germany (DE)">Germany (DE)</option>
+          <option value="Netherlands (NL)">Netherlands (NL)</option>
+          <option value="Austria (AT)">Austria (AT)</option>
+          <option value="Switzerland (CH)">Switzerland (CH)</option>
+          <option value="United Kingdom (UK)">United Kingdom (UK)</option>
+          <option value="Australia (AU)">Australia (AU)</option>
+          <option value="United States (US)">United States (US)</option>
+        </select>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Company size</label>
+        <div class="chips-row" id="chips-size">
+          <span class="chip active" data-val="individual homeowner">Individual</span>
+          <span class="chip" data-val="small business (1–50 employees)">Small (1–50)</span>
+          <span class="chip" data-val="mid-market (51–500 employees)">Mid (51–500)</span>
+          <span class="chip" data-val="enterprise (500+ employees)">Enterprise 500+</span>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Main customer goal</label>
+        <div class="chips-row" id="chips-goal">
+          <span class="chip active" data-val="reduce electricity bill">Cut energy costs</span>
+          <span class="chip" data-val="achieve energy independence">Energy independence</span>
+          <span class="chip" data-val="sustainability / ESG compliance">Sustainability / ESG</span>
+          <span class="chip" data-val="maximize feed-in revenue">Feed-in revenue</span>
+        </div>
+      </div>
+
+      <hr class="divider">
+      <div class="section-label">Context (optional)</div>
+
+      <div class="field-group">
+        <label class="field-label">Key concerns or challenges</label>
+        <span class="field-sub">Grid registration delays, roof type, billing, etc.</span>
+        <textarea id="txt-concerns" placeholder="e.g. Customer worried about Netzbetreiber timeline..."></textarea>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Playbook language</label>
+        <select id="sel-lang">
+          <option value="English">English</option>
+          <option value="German">German (Deutsch)</option>
+          <option value="Portuguese">Portuguese (Português)</option>
+        </select>
+      </div>
+
+      <hr class="divider">
+
+      <button class="btn-primary" id="gen-btn" onclick="generatePlaybook()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+        Generate 90-day playbook
+      </button>
+    </div>
+
+    <div class="output-panel">
+      <div class="empty-state" id="pb-empty">
+        <div class="empty-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 12h8M8 8h8M8 16h5"/></svg>
+        </div>
+        <p style="font-size:14px;font-weight:500;color:#1a1a1a;">No playbook yet</p>
+        <p style="font-size:13px;max-width:260px;">Fill in the client profile and generate. Then use Health Check to monitor after 30 days.</p>
+      </div>
+      <div id="pb-output" style="display:none"></div>
+    </div>
+  </div>
+</div>
+
+<div id="page-health" class="page">
+  <div id="hc-no-playbook" class="no-playbook-hc">
+    <p style="font-size:14px;font-weight:500;color:#1a1a1a;margin-bottom:6px;">No playbook generated yet</p>
+    <p>Go to the Playbook generator tab first, generate a plan, then come back here to run the health check.</p>
+  </div>
+  <div id="hc-main" style="display:none">
+    <div style="display:grid;grid-template-columns:1fr 1fr;min-height:calc(100vh - 110px)">
+      <div style="border-right:1px solid #e8e8e8;padding:1.25rem;overflow-y:auto;">
+        <div class="hc-client-bar" id="hc-client-bar"></div>
+        <div class="section-label" style="margin-bottom:12px;">Mark milestone status</div>
+        <div id="hc-checklist"></div>
+        <div class="hc-actions">
+          <button class="btn-diag" id="diag-btn" onclick="runDiagnosis()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            Run AI diagnosis
+          </button>
+        </div>
+      </div>
+      <div style="padding:1.25rem;overflow-y:auto;">
+        <div class="empty-state" id="diag-empty">
+          <div class="empty-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          </div>
+          <p style="font-size:14px;font-weight:500;color:#1a1a1a;">No diagnosis yet</p>
+          <p style="font-size:13px;max-width:240px;">Mark the milestone statuses on the left, then run AI diagnosis to get a health score and action flags.</p>
+        </div>
+        <div id="diag-output" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var currentPlaybook = null;
+  var milestoneStatuses = {};
+  var milestoneNotes = {};
+
+  function setupChips(id) {
+    document.getElementById(id).querySelectorAll('.chip').forEach(function(c) {
+      c.addEventListener('click', function() {
+        document.getElementById(id).querySelectorAll('.chip').forEach(function(x) { x.classList.remove('active'); });
+        c.classList.add('active');
+      });
+    });
+  }
+  setupChips('chips-install');
+  setupChips('chips-size');
+  setupChips('chips-goal');
+
+  function getChip(id) {
+    var a = document.getElementById(id).querySelector('.chip.active');
+    return a ? a.dataset.val : '';
+  }
+
+  function switchMainTab(btn, pageId) {
+    document.querySelectorAll('.main-tab').forEach(function(t) { t.classList.remove('active'); });
+    document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById(pageId).classList.add('active');
+    if (pageId === 'page-health') { refreshHealthPage(); }
+  }
+
+  function switchInnerTab(btn, tabId) {
+    var parent = btn.closest('.inner-tabs-container');
+    parent.querySelectorAll('.inner-tab').forEach(function(t) { t.classList.remove('active'); });
+    parent.querySelectorAll('.tab-content').forEach(function(t) { t.classList.remove('active'); });
+    btn.classList.add('active');
+    document.getElementById(tabId).classList.add('active');
+  }
+
+  function callGemini(prompt, callback) {
+    var apiKey = document.getElementById('api-key').value.trim();
+    if (!apiKey) { callback(new Error('No API key'), null); return; }
+    fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + apiKey, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { temperature: 0.4, maxOutputTokens: 4096 }
+      })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (data.error) {
+        var msg = data.error.message || 'API error';
+        if (msg.includes('not found') || msg.includes('not supported')) {
+          msg = 'Model unavailable. Check your API key and try again.';
+        }
+        callback(new Error(msg), null);
+        return;
+      }
+      var raw = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text) || '';
+      callback(null, raw);
+    })
+    .catch(function(err) { callback(err, null); });
+  }
+
+  function parseJSON(raw) {
+    var cleaned = raw.replace(/```json|```/g, '').trim();
+    try { return JSON.parse(cleaned); } catch(e) {
+      var m = cleaned.match(/\{[\s\S]*\}/);
+      if (m) return JSON.parse(m[0]);
+      throw new Error('Could not parse JSON response. Try generating again.');
+    }
+  }
+
+  async function generatePlaybook() {
+    var btn = document.getElementById('gen-btn');
+    var outputEl = document.getElementById('pb-output');
+    var emptyEl = document.getElementById('pb-empty');
+
+    var installType = getChip('chips-install');
+    var country = document.getElementById('sel-country').value;
+    var size = getChip('chips-size');
+    var goal = getChip('chips-goal');
+    var concerns = document.getElementById('txt-concerns').value;
+    var lang = document.getElementById('sel-lang').value;
+
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner"></div> Generating...';
+    emptyEl.style.display = 'none';
+    outputEl.style.display = 'block';
+    outputEl.innerHTML = '<div style="padding:3rem;text-align:center;font-size:13px;color:#888;">Calling Gemini API...</div>';
+
+    var prompt = "You are a Customer Success Manager at a solar energy company. Return ONLY a valid JSON object, no markdown, no explanation.\n\nClient: " + installType + " | " + country + " | " + size + " | Goal: " + goal + " | Concerns: " + (concerns || "none") + " | Language: " + lang + "\n\nJSON structure (all text values in " + lang + "):\n{\"summary\":\"2 sentences\",\"phases\":[{\"name\":\"phase name\",\"days\":\"Days X-Y\",\"milestones\":[{\"text\":\"action under 10 words\",\"owner\":\"CS or Client or Tech\"}]}],\"kpis\":[{\"label\":\"name\",\"value\":\"target\",\"target\":\"success description\"}],\"emails\":[{\"day\":\"Day X\",\"subject\":\"subject\",\"body\":\"2 short sentences\"}]}\n\nRules: exactly 4 phases (Days 1-7, Days 8-30, Days 31-60, Days 61-90), exactly 3 milestones per phase, exactly 4 kpis, exactly 3 emails. Keep text SHORT. " + (country.includes("Germany") ? "Reference Netzbetreiber for grid registration." : "") + " JSON only.";
+
+    callGemini(prompt, function(err, raw) {
+      btn.disabled = false;
+      btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg> Generate 90-day playbook';
+
+      if (err) {
+        outputEl.innerHTML = '<div class="error-box"><strong>Error:</strong> ' + err.message + '<br><br>Get a free key at <a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com</a></div>';
+        return;
+      }
+      try {
+        var pb = parseJSON(raw);
+        currentPlaybook = { data: pb, installType: installType, country: country, size: size, lang: lang };
+        milestoneStatuses = {};
+        milestoneNotes = {};
+        document.getElementById('hc-dot').classList.add('visible');
+        renderPlaybook(pb, installType, country, size, outputEl);
+      } catch(e) {
+        outputEl.innerHTML = '<div class="error-box"><strong>Parse error:</strong> ' + e.message + '</div>';
+      }
+    });
+  }
+
+  function renderPlaybook(p, installType, country, size, container) {
+    var phaseHTML = (p.phases || []).map(function(ph, i) {
+      return '<div class="phase-card"><div class="phase-header"><div class="phase-num">' + (i+1) + '</div><span class="phase-name">' + ph.name + '</span><span class="phase-days">' + ph.days + '</span></div><div class="phase-body">' +
+        (ph.milestones || []).map(function(m) {
+          return '<div class="milestone-row"><div class="check-box"></div><span class="milestone-text">' + m.text + '</span><span class="owner-pill">' + m.owner + '</span></div>';
+        }).join('') + '</div></div>';
+    }).join('');
+
+    var kpiHTML = (p.kpis || []).map(function(k) {
+      return '<div class="kpi-card"><div class="kpi-label">' + k.label + '</div><div class="kpi-value">' + k.value + '</div><div class="kpi-target">' + k.target + '</div></div>';
+    }).join('');
+
+    var emailHTML = (p.emails || []).map(function(e) {
+      return '<div class="email-card"><div class="email-header"><div class="email-day">' + e.day + '</div><div class="email-subject">' + e.subject + '</div></div><div class="email-body">' + e.body + '</div></div>';
+    }).join('');
+
+    var sqlHTML = '<div class="sql-block"><span class="sql-comment">-- onboarding_milestones: tracks each milestone per customer</span>\n\n<span class="sql-keyword">CREATE TABLE</span> onboarding_milestones (\n  id              <span class="sql-type">UUID</span>          <span class="sql-keyword">PRIMARY KEY DEFAULT</span> gen_random_uuid(),\n  customer_id     <span class="sql-type">UUID</span>          <span class="sql-keyword">NOT NULL REFERENCES</span> customers(id),\n  phase           <span class="sql-type">INT</span>           <span class="sql-keyword">NOT NULL CHECK</span> (phase BETWEEN 1 AND 4),\n  phase_name      <span class="sql-type">VARCHAR(100)</span>  <span class="sql-keyword">NOT NULL</span>,\n  milestone_text  <span class="sql-type">TEXT</span>          <span class="sql-keyword">NOT NULL</span>,\n  owner           <span class="sql-type">VARCHAR(50)</span>,   <span class="sql-comment">-- CS, Client, Tech</span>\n  status          <span class="sql-type">VARCHAR(20)</span>   <span class="sql-keyword">DEFAULT</span> <span class="sql-string">\'pending\'</span>\n                  <span class="sql-keyword">CHECK</span> (status IN (<span class="sql-string">\'ok\'</span>, <span class="sql-string">\'at_risk\'</span>, <span class="sql-string">\'failed\'</span>, <span class="sql-string">\'pending\'</span>)),\n  due_day         <span class="sql-type">INT</span>,\n  health_score    <span class="sql-type">INT</span>,           <span class="sql-comment">-- 0-100, computed by AI diagnosis</span>\n  cs_notes        <span class="sql-type">TEXT</span>,\n  completed_at    <span class="sql-type">TIMESTAMPTZ</span>,\n  created_at      <span class="sql-type">TIMESTAMPTZ</span>   <span class="sql-keyword">DEFAULT</span> now()\n);\n\n<span class="sql-comment">-- Health score view per customer</span>\n<span class="sql-keyword">CREATE VIEW</span> v_onboarding_health <span class="sql-keyword">AS</span>\n<span class="sql-keyword">SELECT</span> customer_id,\n  <span class="sql-keyword">COUNT</span>(*) <span class="sql-keyword">AS</span> total,\n  <span class="sql-keyword">SUM</span>(<span class="sql-keyword">CASE WHEN</span> status=<span class="sql-string">\'ok\'</span> <span class="sql-keyword">THEN</span> 1 <span class="sql-keyword">ELSE</span> 0 <span class="sql-keyword">END</span>) <span class="sql-keyword">AS</span> ok_count,\n  <span class="sql-keyword">AVG</span>(health_score) <span class="sql-keyword">AS</span> avg_health_score\n<span class="sql-keyword">FROM</span> onboarding_milestones\n<span class="sql-keyword">GROUP BY</span> customer_id;</div>';
+
+    container.innerHTML = '<div class="playbook-header"><div><div class="playbook-title">90-Day Onboarding Playbook</div><div class="playbook-meta">' + installType + ' · ' + country + ' · ' + size + '</div></div><div style="display:flex;gap:6px;align-items:center;"><span class="badge badge-teal">Gemini AI</span><span class="badge badge-blue" style="cursor:pointer" onclick="goToHealthCheck()">Go to Health Check →</span></div></div><div class="summary-box">' + (p.summary || '') + '</div><div class="inner-tabs-container"><div class="inner-tabs"><button class="inner-tab active" onclick="switchInnerTab(this,\'tab-phases\')">Phases</button><button class="inner-tab" onclick="switchInnerTab(this,\'tab-kpis\')">KPIs</button><button class="inner-tab" onclick="switchInnerTab(this,\'tab-emails\')">Emails</button><button class="inner-tab" onclick="switchInnerTab(this,\'tab-sql\')">SQL</button></div><div class="tab-content active" id="tab-phases">' + phaseHTML + '</div><div class="tab-content" id="tab-kpis"><div class="kpi-grid">' + kpiHTML + '</div></div><div class="tab-content" id="tab-emails">' + emailHTML + '</div><div class="tab-content" id="tab-sql"><p style="font-size:13px;color:#888;margin-bottom:12px;">PostgreSQL schema — includes health_score field updated by AI diagnosis.</p>' + sqlHTML + '</div></div>';
+  }
+
+  function goToHealthCheck() {
+    var btn = document.getElementById('tab-health');
+    switchMainTab(btn, 'page-health');
+  }
+
+  function refreshHealthPage() {
+    if (!currentPlaybook) {
+      document.getElementById('hc-no-playbook').style.display = 'block';
+      document.getElementById('hc-main').style.display = 'none';
+      return;
+    }
+    document.getElementById('hc-no-playbook').style.display = 'none';
+    document.getElementById('hc-main').style.display = 'block';
+
+    var pb = currentPlaybook.data;
+    var bar = document.getElementById('hc-client-bar');
+    bar.innerHTML = '<div><div class="hc-client-name">' + currentPlaybook.installType + '</div><div class="hc-client-meta">' + currentPlaybook.country + ' · ' + currentPlaybook.size + '</div></div><div class="hc-day-badge"><div class="hc-day-num">Day</div><div class="hc-day-label">of onboarding</div></div>';
+
+    var cl = document.getElementById('hc-checklist');
+    cl.innerHTML = '';
+    (pb.phases || []).forEach(function(ph, pi) {
+      var sec = document.createElement('div');
+      sec.className = 'hc-phase-section';
+      sec.innerHTML = '<div class="hc-phase-title"><span>Phase ' + (pi+1) + ' — ' + ph.name + '</span><div class="hc-phase-sep"></div><span>' + ph.days + '</span></div>';
+      (ph.milestones || []).forEach(function(m, mi) {
+        var key = pi + '-' + mi;
+        var status = milestoneStatuses[key] || 'pending';
+        var note = milestoneNotes[key] || '';
+        var dotClass = status === 'ok' ? 'hc-dot-ok' : status === 'at_risk' ? 'hc-dot-risk' : status === 'failed' ? 'hc-dot-fail' : 'hc-dot-pending';
+        var item = document.createElement('div');
+        item.className = 'hc-item';
+        item.innerHTML = '<div class="hc-item-top"><div class="hc-dot ' + dotClass + '" id="dot-' + key + '"></div><div><div class="hc-item-text">' + m.text + '</div><div class="hc-item-sub">Owner: ' + m.owner + ' · ' + ph.days + '</div></div></div><div class="hc-status-row"><span class="hc-pill hc-pill-ok' + (status==='ok'?' sel':'') + '" onclick="setStatus(\'' + key + '\',\'ok\',this)">Done on time</span><span class="hc-pill hc-pill-risk' + (status==='at_risk'?' sel':'') + '" onclick="setStatus(\'' + key + '\',\'at_risk\',this)">Delayed</span><span class="hc-pill hc-pill-fail' + (status==='failed'?' sel':'') + '" onclick="setStatus(\'' + key + '\',\'failed\',this)">Not done</span><span class="hc-pill hc-pill-pending' + (status==='pending'?' sel':'') + '" onclick="setStatus(\'' + key + '\',\'pending\',this)">Pending</span></div><textarea class="hc-note" placeholder="Notes (optional)..." onchange="setNote(\'' + key + '\',this.value)">' + note + '</textarea>';
+        sec.appendChild(item);
+      });
+      cl.appendChild(sec);
+    });
+  }
+
+  function setStatus(key, status, el) {
+    milestoneStatuses[key] = status;
+    var dotClass = status === 'ok' ? 'hc-dot-ok' : status === 'at_risk' ? 'hc-dot-risk' : status === 'failed' ? 'hc-dot-fail' : 'hc-dot-pending';
+    var dot = document.getElementById('dot-' + key);
+    if (dot) { dot.className = 'hc-dot ' + dotClass; }
+    el.closest('.hc-status-row').querySelectorAll('.hc-pill').forEach(function(p) { p.classList.remove('sel'); });
+    el.classList.add('sel');
+  }
+
+  function setNote(key, val) { milestoneNotes[key] = val; }
+
+  function runDiagnosis() {
+    var btn = document.getElementById('diag-btn');
+    var emptyEl = document.getElementById('diag-empty');
+    var outputEl = document.getElementById('diag-output');
+
+    if (!currentPlaybook) return;
+    var pb = currentPlaybook.data;
+
+    var summary = [];
+    var okCount = 0; var riskCount = 0; var failCount = 0; var pendingCount = 0;
+    (pb.phases || []).forEach(function(ph, pi) {
+      (ph.milestones || []).forEach(function(m, mi) {
+        var key = pi + '-' + mi;
+        var st = milestoneStatuses[key] || 'pending';
+        var note = milestoneNotes[key] || '';
+        if (st === 'ok') okCount++;
+        else if (st === 'at_risk') riskCount++;
+        else if (st === 'failed') failCount++;
+        else pendingCount++;
+        summary.push('Phase ' + (pi+1) + ' / ' + ph.name + ' / Milestone: "' + m.text + '" / Owner: ' + m.owner + ' / Status: ' + st + (note ? ' / Note: ' + note : ''));
+      });
+    });
+
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner"></div> Analyzing...';
+    emptyEl.style.display = 'none';
+    outputEl.style.display = 'block';
+    outputEl.innerHTML = '<div class="diag-loading"><div class="spinner-dark"></div> Running AI diagnosis...</div>';
+
+    var prompt = "You are a Senior Customer Success Manager analyzing an onboarding health check. Return ONLY valid JSON, no markdown.\n\nClient: " + currentPlaybook.installType + " | " + currentPlaybook.country + " | " + currentPlaybook.size + "\n\nMilestone statuses:\n" + summary.join('\n') + "\n\nCounts: ok=" + okCount + " at_risk=" + riskCount + " failed=" + failCount + " pending=" + pendingCount + "\n\nReturn this exact JSON:\n{\"score\":75,\"level\":\"at_risk\",\"summary\":\"2 sentence overall assessment\",\"flags\":[{\"severity\":\"red or amber or green\",\"title\":\"flag title\",\"body\":\"explanation 2 sentences\",\"action\":\"recommended action\"}]}\n\nlevel must be: healthy (score>=75), at_risk (50-74), critical (below 50). Generate 2-4 flags based on actual milestone data. Red = failed/critical, amber = at_risk/delayed, green = completed well. score is 0-100 integer. JSON only.";
+
+    callGemini(prompt, function(err, raw) {
+      btn.disabled = false;
+      btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg> Run AI diagnosis';
+
+      if (err) {
+        outputEl.innerHTML = '<div class="error-box">' + err.message + '</div>';
+        return;
+      }
+      try {
+        var diag = parseJSON(raw);
+        renderDiagnosis(diag, outputEl);
+      } catch(e) {
+        outputEl.innerHTML = '<div class="error-box">Parse error: ' + e.message + '</div>';
+      }
+    });
+  }
+
+  function renderDiagnosis(d, container) {
+    var score = parseInt(d.score) || 0;
+    var level = d.level || 'at_risk';
+    var scoreColor = level === 'healthy' ? 'score-green' : level === 'at_risk' ? 'score-amber' : 'score-red';
+    var fillColor = level === 'healthy' ? 'score-fill-green' : level === 'at_risk' ? 'score-fill-amber' : 'score-fill-red';
+    var levelLabel = level === 'healthy' ? 'Healthy' : level === 'at_risk' ? 'At risk' : 'Critical';
+
+    var flagsHTML = (d.flags || []).map(function(f) {
+      var cls = f.severity === 'red' ? 'flag-red' : f.severity === 'green' ? 'flag-green' : 'flag-amber';
+      var icon = f.severity === 'red'
+        ? '<svg class="flag-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>'
+        : f.severity === 'green'
+        ? '<svg class="flag-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>'
+        : '<svg class="flag-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>';
+      return '<div class="flag-card ' + cls + '"><div class="flag-title">' + icon + f.title + '</div><div class="flag-body">' + f.body + '</div>' + (f.action && f.severity !== 'green' ? '<div class="flag-action">→ ' + f.action + '</div>' : '') + '</div>';
+    }).join('');
+
+    container.innerHTML = '<div class="section-label" style="margin-bottom:12px;">AI diagnosis</div><div class="score-section"><div class="score-top"><div class="score-num ' + scoreColor + '">' + score + '</div><div class="score-info"><div class="score-label">health score</div><div class="score-status" style="color:' + (level==='healthy'?'#3B6D11':level==='at_risk'?'#854F0B':'#A32D2D') + '">' + levelLabel + '</div></div></div><div class="score-bar"><div class="score-fill ' + fillColor + '" style="width:' + score + '%"></div></div><div class="summary-box">' + (d.summary || '') + '</div></div><div class="section-label" style="margin-bottom:12px;">Action flags</div>' + flagsHTML;
+  }
+</script>
+</body>
+</html>
