@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0066)file:///C:/Users/Clara/Downloads/onboarding_playbook_gemini_5.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Onboarding Playbook Generator</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="./Onboarding Playbook Generator Complete_files/css2" rel="stylesheet">
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: 'DM Sans', sans-serif; background: #fff; color: #1a1a1a; min-height: 100vh; }
@@ -96,8 +96,8 @@ textarea { resize: vertical; min-height: 64px; line-height: 1.5; }
 <div class="header">
   <div class="logo-badge">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linejoin="round">
-      <path d="M12 2L3 7v10l9 5 9-5V7L12 2z"/>
-      <path d="M12 22V12M3 7l9 5 9-5"/>
+      <path d="M12 2L3 7v10l9 5 9-5V7L12 2z"></path>
+      <path d="M12 22V12M3 7l9 5 9-5"></path>
     </svg>
   </div>
   <span class="header-title">Onboarding Playbook Generator</span>
@@ -106,8 +106,8 @@ textarea { resize: vertical; min-height: 64px; line-height: 1.5; }
 
 <div class="api-bar">
   <span class="api-label">Gemini API Key</span>
-  <input class="api-input" type="password" id="api-key" placeholder="Paste your key here — AIza..." />
-  <span class="api-note">using gemini-1.5-flash (free)</span>
+  <input class="api-input" type="password" id="api-key" placeholder="Paste your key here — AIza...">
+  <span class="api-note">using gemini-2.5-flash (free)</span>
   <a class="api-link" href="https://aistudio.google.com/app/apikey" target="_blank">Get free key ↗</a>
 </div>
 
@@ -142,9 +142,9 @@ textarea { resize: vertical; min-height: 64px; line-height: 1.5; }
     <div class="field-group">
       <label class="field-label">Company size</label>
       <div class="chips-row" id="chips-size">
-        <span class="chip active" data-val="individual homeowner">Individual</span>
+        <span class="chip" data-val="individual homeowner">Individual</span>
         <span class="chip" data-val="small business (1–50 employees)">Small (1–50)</span>
-        <span class="chip" data-val="mid-market (51–500 employees)">Mid (51–500)</span>
+        <span class="chip active" data-val="mid-market (51–500 employees)">Mid (51–500)</span>
         <span class="chip" data-val="enterprise (500+ employees)">Enterprise 500+</span>
       </div>
     </div>
@@ -152,10 +152,10 @@ textarea { resize: vertical; min-height: 64px; line-height: 1.5; }
     <div class="field-group">
       <label class="field-label">Main customer goal</label>
       <div class="chips-row" id="chips-goal">
-        <span class="chip active" data-val="reduce electricity bill">Cut energy costs</span>
+        <span class="chip" data-val="reduce electricity bill">Cut energy costs</span>
         <span class="chip" data-val="achieve energy independence">Energy independence</span>
         <span class="chip" data-val="sustainability / ESG compliance">Sustainability / ESG</span>
-        <span class="chip" data-val="maximize feed-in revenue">Feed-in revenue</span>
+        <span class="chip active" data-val="maximize feed-in revenue">Feed-in revenue</span>
       </div>
     </div>
 
@@ -179,26 +179,247 @@ textarea { resize: vertical; min-height: 64px; line-height: 1.5; }
 
     <hr class="divider">
 
-    <button class="generate-btn" id="gen-btn" onclick="generatePlaybook()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
-      </svg>
-      Generate 90-day playbook
-    </button>
+    <button class="generate-btn" id="gen-btn" onclick="generatePlaybook()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path></svg> Generate 90-day playbook</button>
   </div>
 
   <div class="output-panel" id="output-panel">
-    <div class="empty-state" id="empty-state">
+    <div class="empty-state" id="empty-state" style="display: none;">
       <div class="empty-icon">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#aaa" stroke-width="1.5">
-          <rect x="3" y="3" width="18" height="18" rx="3"/>
-          <path d="M8 12h8M8 8h8M8 16h5"/>
+          <rect x="3" y="3" width="18" height="18" rx="3"></rect>
+          <path d="M8 12h8M8 8h8M8 16h5"></path>
         </svg>
       </div>
       <p style="font-size:14px;font-weight:500;color:#1a1a1a;">No playbook yet</p>
       <p style="font-size:13px;max-width:280px;">Add your Gemini API key, fill in the client profile, and click generate.</p>
     </div>
-    <div id="playbook-output" style="display:none"></div>
+    <div id="playbook-output" style="display: block;">
+      <div class="playbook-header">
+        <div>
+          <div class="playbook-title">90-Day Onboarding Playbook</div>
+          <div class="playbook-meta">Residential solar (rooftop) · Germany (DE) · mid-market (51–500 employees)</div>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <span class="badge badge-teal">Gemini AI</span>
+          <button class="copy-btn" onclick="copyJSON()">Copy JSON</button>
+        </div>
+      </div>
+
+      <div class="summary-box">This plan outlines key steps to ensure your residential solar system in Germany maximizes feed-in revenue. We will guide you through activation, optimization, and ongoing performance monitoring.</div>
+
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab(this,&#39;tab-phases&#39;)">Phases &amp; Milestones</button>
+        <button class="tab" onclick="switchTab(this,&#39;tab-kpis&#39;)">KPIs</button>
+        <button class="tab" onclick="switchTab(this,&#39;tab-emails&#39;)">Follow-up Emails</button>
+        <button class="tab" onclick="switchTab(this,&#39;tab-sql&#39;)">SQL Schema</button>
+      </div>
+
+      <div class="tab-content active" id="tab-phases">
+      <div class="phase-card">
+        <div class="phase-header">
+          <div class="phase-num">1</div>
+          <span class="phase-name">System Activation &amp; Grid Registration</span>
+          <span class="phase-days">Days 1-7</span>
+        </div>
+        <div class="phase-body">
+          
+            <div class="milestone-row">
+              <div class="check-box"></div>
+              <span class="milestone-text">System installation complete, initial tests.</span>
+              <span class="milestone-owner">Tech</span>
+            </div>
+          
+            <div class="milestone-row">
+              <div class="check-box"></div>
+              <span class="milestone-text">Submit Netzbetreiber grid connection application.</span>
+              <span class="milestone-owner">Client</span>
+            </div>
+          
+            <div class="milestone-row">
+              <div class="check-box"></div>
+              <span class="milestone-text">Schedule final system commissioning.</span>
+              <span class="milestone-owner">CS</span>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="phase-card">
+        <div class="phase-header">
+          <div class="phase-num">2</div>
+          <span class="phase-name">Monitoring &amp; Initial Optimization</span>
+          <span class="phase-days">Days 8-30</span>
+        </div>
+        <div class="phase-body">
+          
+            <div class="milestone-row">
+              <div class="check-box"></div>
+              <span class="milestone-text">Confirm grid connection and feed-in start.</span>
+              <span class="milestone-owner">CS</span>
+            </div>
+          
+            <div class="milestone-row">
+              <div class="check-box"></div>
+              <span class="milestone-text">Client accesses solar monitoring portal.</span>
+              <span class="milestone-owner">CS</span>
+            </div>
+          
+            <div class="milestone-row">
+              <div class="check-box"></div>
+              <span class="milestone-text">Review initial system performance data.</span>
+              <span class="milestone-owner">Client</span>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="phase-card">
+        <div class="phase-header">
+          <div class="phase-num">3</div>
+          <span class="phase-name">Performance Review &amp; Refinement</span>
+          <span class="phase-days">Days 31-60</span>
+        </div>
+        <div class="phase-body">
+          
+            <div class="milestone-row">
+              <div class="check-box"></div>
+              <span class="milestone-text">Conduct first month performance review call.</span>
+              <span class="milestone-owner">CS</span>
+            </div>
+          
+            <div class="milestone-row">
+              <div class="check-box"></div>
+              <span class="milestone-text">Identify potential optimization areas.</span>
+              <span class="milestone-owner">CS</span>
+            </div>
+          
+            <div class="milestone-row">
+              <div class="check-box"></div>
+              <span class="milestone-text">Implement necessary system adjustments.</span>
+              <span class="milestone-owner">Tech</span>
+            </div>
+          
+        </div>
+      </div>
+    
+      <div class="phase-card">
+        <div class="phase-header">
+          <div class="phase-num">4</div>
+          <span class="phase-name">Ongoing Support &amp; Revenue Maximization</span>
+          <span class="phase-days">Days 61-90</span>
+        </div>
+        <div class="phase-body">
+          
+            <div class="milestone-row">
+              <div class="check-box"></div>
+              <span class="milestone-text">Provide quarterly performance report.</span>
+              <span class="milestone-owner">CS</span>
+            </div>
+          
+            <div class="milestone-row">
+              <div class="check-box"></div>
+              <span class="milestone-text">Discuss market changes affecting feed-in.</span>
+              <span class="milestone-owner">CS</span>
+            </div>
+          
+            <div class="milestone-row">
+              <div class="check-box"></div>
+              <span class="milestone-text">Ensure system health, peak operation.</span>
+              <span class="milestone-owner">Tech</span>
+            </div>
+          
+        </div>
+      </div>
+    </div>
+      <div class="tab-content" id="tab-kpis"><div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-label">Feed-in Revenue</div>
+        <div class="kpi-value">Target X €/month</div>
+        <div class="kpi-target">Maximize monthly feed-in revenue.</div>
+      </div>
+    
+      <div class="kpi-card">
+        <div class="kpi-label">System Uptime</div>
+        <div class="kpi-value">&gt;99%</div>
+        <div class="kpi-target">Ensure continuous system operation.</div>
+      </div>
+    
+      <div class="kpi-card">
+        <div class="kpi-label">Energy Production</div>
+        <div class="kpi-value">Target X kWh/month</div>
+        <div class="kpi-target">Meet or exceed projected energy generation.</div>
+      </div>
+    
+      <div class="kpi-card">
+        <div class="kpi-label">Netzbetreiber Registration</div>
+        <div class="kpi-value">Complete</div>
+        <div class="kpi-target">Timely and successful grid registration.</div>
+      </div>
+    </div></div>
+      <div class="tab-content" id="tab-emails">
+      <div class="email-card">
+        <div class="email-header">
+          <div class="email-day">Day 1</div>
+          <div class="email-subject">Welcome to Your Solar Journey!</div>
+        </div>
+        <div class="email-body">We are thrilled to begin your solar journey. This email outlines your initial steps for system activation.</div>
+      </div>
+    
+      <div class="email-card">
+        <div class="email-header">
+          <div class="email-day">Day 15</div>
+          <div class="email-subject">Your Solar Monitoring Portal is Ready!</div>
+        </div>
+        <div class="email-body">Your monitoring portal is now active. You can track your system's performance and feed-in revenue here.</div>
+      </div>
+    
+      <div class="email-card">
+        <div class="email-header">
+          <div class="email-day">Day 35</div>
+          <div class="email-subject">Let's Review Your First Month's Performance</div>
+        </div>
+        <div class="email-body">It's time to review your system's initial performance. Please schedule a call to discuss optimization opportunities.</div>
+      </div>
+    </div>
+      <div class="tab-content" id="tab-sql">
+        <p style="font-size:13px;color:#888;margin-bottom:12px;">PostgreSQL schema for storing milestones in a real CRM, with a health-score view for CS tracking.</p>
+        <div class="sql-block"><span class="sql-comment">-- onboarding_milestones: tracks each milestone per customer</span>
+
+<span class="sql-keyword">CREATE TABLE</span> onboarding_milestones (
+  id              <span class="sql-type">UUID</span>          <span class="sql-keyword">PRIMARY KEY DEFAULT</span> gen_random_uuid(),
+  customer_id     <span class="sql-type">UUID</span>          <span class="sql-keyword">NOT NULL REFERENCES</span> customers(id),
+  playbook_id     <span class="sql-type">UUID</span>          <span class="sql-keyword">REFERENCES</span> playbooks(id),
+  phase           <span class="sql-type">INT</span>           <span class="sql-keyword">NOT NULL CHECK</span> (phase BETWEEN 1 AND 4),
+  phase_name      <span class="sql-type">VARCHAR(100)</span>  <span class="sql-keyword">NOT NULL</span>,
+  milestone_text  <span class="sql-type">TEXT</span>          <span class="sql-keyword">NOT NULL</span>,
+  owner           <span class="sql-type">VARCHAR(50)</span>,   <span class="sql-comment">-- 'CS', 'Client', 'Tech'</span>
+  status          <span class="sql-type">VARCHAR(20)</span>   <span class="sql-keyword">DEFAULT</span> <span class="sql-string">'pending'</span>
+                  <span class="sql-keyword">CHECK</span> (status IN (<span class="sql-string">'pending'</span>, <span class="sql-string">'in_progress'</span>, <span class="sql-string">'completed'</span>, <span class="sql-string">'skipped'</span>)),
+  due_day         <span class="sql-type">INT</span>,            <span class="sql-comment">-- e.g. 7, 30, 60, 90</span>
+  completed_at    <span class="sql-type">TIMESTAMPTZ</span>,
+  notes           <span class="sql-type">TEXT</span>,
+  created_at      <span class="sql-type">TIMESTAMPTZ</span>   <span class="sql-keyword">DEFAULT</span> now(),
+  updated_at      <span class="sql-type">TIMESTAMPTZ</span>   <span class="sql-keyword">DEFAULT</span> now()
+);
+
+<span class="sql-comment">-- Index for fast lookup per customer</span>
+<span class="sql-keyword">CREATE INDEX</span> idx_milestones_customer
+  <span class="sql-keyword">ON</span> onboarding_milestones (customer_id, phase, status);
+
+<span class="sql-comment">-- View: 90-day completion health score per customer</span>
+<span class="sql-keyword">CREATE VIEW</span> v_onboarding_health <span class="sql-keyword">AS</span>
+<span class="sql-keyword">SELECT</span>
+  customer_id,
+  <span class="sql-keyword">COUNT</span>(*) <span class="sql-keyword">AS</span> total_milestones,
+  <span class="sql-keyword">SUM</span>(<span class="sql-keyword">CASE WHEN</span> status = <span class="sql-string">'completed'</span> <span class="sql-keyword">THEN</span> 1 <span class="sql-keyword">ELSE</span> 0 <span class="sql-keyword">END</span>) <span class="sql-keyword">AS</span> completed,
+  <span class="sql-keyword">ROUND</span>(
+    100.0 * <span class="sql-keyword">SUM</span>(<span class="sql-keyword">CASE WHEN</span> status = <span class="sql-string">'completed'</span> <span class="sql-keyword">THEN</span> 1 <span class="sql-keyword">ELSE</span> 0 <span class="sql-keyword">END</span>)
+    / <span class="sql-keyword">NULLIF</span>(<span class="sql-keyword">COUNT</span>(*), 0), 1
+  ) <span class="sql-keyword">AS</span> completion_pct
+<span class="sql-keyword">FROM</span> onboarding_milestones
+<span class="sql-keyword">GROUP BY</span> customer_id;</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -241,60 +462,29 @@ textarea { resize: vertical; min-height: 64px; line-height: 1.5; }
     outputEl.style.display = 'block';
     outputEl.innerHTML = '<div style="padding:2rem;font-size:13px;color:#888;text-align:center;">Calling Gemini API...</div>';
 
-    const prompt = `You are a Senior Customer Success Manager at a solar energy company (like Enpal in Germany). Generate a personalized 90-day onboarding playbook for this client:
-
-- Installation type: ${installType}
-- Country/Market: ${country}
-- Customer type: ${size}
-- Primary goal: ${goal}
-- Key concerns: ${concerns || 'None specified'}
-- Language: ${lang}
-
-Write the playbook in ${lang}. Return ONLY a valid JSON object, no markdown fences, no explanation:
-
-{
-  "summary": "2-sentence executive summary",
-  "phases": [
-    {
-      "name": "Phase name",
-      "days": "Days 1-7",
-      "milestones": [
-        { "text": "Milestone description", "owner": "CS" }
-      ]
-    }
-  ],
-  "kpis": [
-    { "label": "KPI name", "value": "Target", "target": "Success threshold" }
-  ],
-  "emails": [
-    { "day": "Day 1", "subject": "Subject line", "body": "2-3 sentence warm professional email body" }
-  ]
-}
-
-Rules:
-- Exactly 4 phases: Days 1-7, Days 8-30, Days 31-60, Days 61-90
-- 3-4 milestones per phase with owner as CS, Client, or Tech
-- Exactly 4 KPIs relevant to solar onboarding success
-- Exactly 3 follow-up emails at key onboarding moments
-- Reference country-specific details where relevant (e.g. Netzbetreiber for Germany)
-- Make it specific to the installation type and customer goal
-- Return ONLY the JSON object`;
+    const prompt = "You are a Customer Success Manager at a solar energy company. Return ONLY a valid JSON object, no markdown, no explanation.\n\nClient: " + installType + " | " + country + " | " + size + " | Goal: " + goal + " | Concerns: " + (concerns || "none") + " | Language: " + lang + "\n\nReturn this exact JSON structure with " + lang + " text values:\n{\"summary\":\"2 sentences\",\"phases\":[{\"name\":\"phase name\",\"days\":\"Days X-Y\",\"milestones\":[{\"text\":\"action under 10 words\",\"owner\":\"CS or Client or Tech\"}]}],\"kpis\":[{\"label\":\"name\",\"value\":\"target\",\"target\":\"success description\"}],\"emails\":[{\"day\":\"Day X\",\"subject\":\"subject\",\"body\":\"2 short sentences\"}]}\n\nRules: exactly 4 phases (Days 1-7, Days 8-30, Days 31-60, Days 61-90), exactly 3 milestones per phase, exactly 4 kpis, exactly 3 emails. Keep text SHORT to avoid truncation. " + (country.includes("Germany") ? "Reference Netzbetreiber for grid registration." : "") + " Return JSON only, nothing else.";
 
     try {
       const resp = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: { temperature: 0.7, maxOutputTokens: 2048 }
+            generationConfig: { temperature: 0.4, maxOutputTokens: 4096 }
           })
         }
       );
 
       const data = await resp.json();
-      if (data.error) throw new Error(data.error.message);
+      if (data.error) {
+        const msg = data.error.message || '';
+        if (msg.includes('not found') || msg.includes('not supported')) {
+          throw new Error('Model not available. Try refreshing — Google may have updated their free tier models. Current model: gemini-2.5-flash');
+        }
+        throw new Error(msg);
+      }
 
       const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
       const cleaned = raw.replace(/```json|```/g, '').trim();
@@ -443,5 +633,6 @@ Rules:
     }
   }
 </script>
-</body>
-</html>
+
+
+</body></html>
